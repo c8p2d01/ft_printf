@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clems <clems@student.42.fr>                +#+  +:+       +#+        */
+/*   By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:27:59 by clems             #+#    #+#             */
-/*   Updated: 2021/05/30 17:38:00 by clems            ###   ########.fr       */
+/*   Updated: 2021/08/14 10:59:53 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "printf.h"
 
 // write an integer to a given file-directory
 void	ft_putnbr_fd(int n, int fd)

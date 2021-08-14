@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clems <clems@student.42.fr>                +#+  +:+       +#+        */
+/*   By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/18 11:34:14 by clems             #+#    #+#             */
-/*   Updated: 2021/05/30 10:07:22 by clems            ###   ########.fr       */
+/*   Updated: 2021/08/14 10:57:58 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "printf.h"
 
 // convert the given positive integral number to a char representation in *res
 static void	pitoa (long m, int p, int l, char *res)
@@ -50,7 +50,7 @@ char	*ft_itoa(int n)
 		p = 1;
 	if (p == 1)
 		m *= -1;
-	l = ft_ndigit_bonus(m);
+	l = ft_ndigit(m);
 	res = malloc(l + p + 1);
 	if (res == NULL)
 		return (NULL);

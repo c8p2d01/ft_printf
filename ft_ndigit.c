@@ -1,32 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
+/*   ft_ndigit.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/05/13 15:22:43 by clems             #+#    #+#             */
-/*   Updated: 2021/08/14 11:48:43 by cdahlhof         ###   ########.fr       */
+/*   Created: 2021/05/19 14:36:09 by clems             #+#    #+#             */
+/*   Updated: 2021/08/14 10:59:34 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "printf.h"
 
-// write a given string to a given file-directory
-void	ft_putstr_fd(char *s, int fd)
+// count the number of digits in the given number
+size_t	ft_ndigit(size_t n)
 {
-	int	i;
+	size_t	i;
+	size_t	p;
 
-	i = 0;
-	if (s == NULL)
-		return ;
-	while (s[i])
+	p = 1;
+	i = 10;
+	while (i > 0)
 	{
-		write(fd, &s[i], 1);
-		i++;
+		if ((n % i) == n)
+			return (p);
+		i *= 10;
+		p++;
 	}
+	return (p);
 }
-//int main()
-//{
-//	ft_putendl_fd("examlpleString", 1);
-//}
