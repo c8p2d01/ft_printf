@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   _putnbr_base.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cdahlhof <cdahlhof@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/15 16:19:21 by cdahlhof          #+#    #+#             */
-/*   Updated: 2021/08/16 14:05:28 by cdahlhof         ###   ########.fr       */
+/*   Updated: 2022/07/17 00:58:07 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,23 +38,23 @@ int	base_check(char *str)
 	return (i);
 }
 
-void	print_base(char *base, long nbr)
+int	print_base(char *base, unsigned long nbr)
 {
-	if (nbr >= (long)ft_strlen(base))
-		print_base(base, nbr / ft_strlen(base));
-	write(1, &base[(nbr % ft_strlen(base))], 1);
+	int	i;
+
+	i = 0;
+	if (nbr >= (unsigned long)ft_strlen(base))
+		i += print_base(base, nbr / ft_strlen(base));
+	return (write(1, &base[(nbr % ft_strlen(base))], 1) + i);
 }
 
-void	ft_putnbr_base(long nbr, char *base)
+int	ft_putnbr_base(unsigned long nbr, char *base)
 {
-	long	i;
-
-	i = nbr;
 	if (base_check(base) > 1)
 	{
-		if (i >= 0)
-			print_base(base, i);
+		return (print_base(base, nbr));
 	}
+	return (0);
 }
 
 // int main(void)

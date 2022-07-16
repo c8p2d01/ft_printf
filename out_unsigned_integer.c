@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   out_unsigned_integer.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cdahlhof <cdahlhof@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/15 16:37:00 by cdahlhof          #+#    #+#             */
-/*   Updated: 2021/08/15 20:59:27 by cdahlhof         ###   ########.fr       */
+/*   Updated: 2022/07/17 00:47:03 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,7 @@
 
 int	out_unsigned_integer(unsigned int nbr)
 {
-	if (nbr >= 0)
-		ft_putnbr_base(nbr, "0123456789");
-	else
-		ft_putnbr_base((4294967296 + nbr), "0123456789");
-	if (nbr >= 0)
-		return (_ndigit(nbr));
-	return (_ndigit(4294967296 + nbr));
+	return (ft_putnbr_base(nbr, "0123456789"));
 }
 
 // int main(void)

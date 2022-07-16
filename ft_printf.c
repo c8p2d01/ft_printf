@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cdahlhof <cdahlhof@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 10:31:09 by cdahlhof          #+#    #+#             */
-/*   Updated: 2021/08/16 14:07:16 by cdahlhof         ###   ########.fr       */
+/*   Updated: 2022/07/17 00:57:43 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ int	ft_printf(const char *str, ...)
 // // make && gcc -Wall -Werror -Wextra ft_printf.c libftprintf.a && ./a.out
 // // "%i\t%d\t%c\t%s\t%x\t%X\t%%\t%p\n"
 // // , 42, -42, 'F', "I hate my life", 42, 2147483647, NULL
+// #include <stdio.h>
 // int	main()
 // {
 // 	int out;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   out_spread.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cdahlhof <cdahlhof@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/15 20:45:53 by cdahlhof          #+#    #+#             */
-/*   Updated: 2021/08/16 13:47:20 by cdahlhof         ###   ########.fr       */
+/*   Updated: 2022/07/17 01:00:19 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	out_spread(int n, va_list ap)
 	else if (n == 3)
 		return (out_integer(va_arg(ap, int)));
 	else if (n == 4)
-		return (out_pointer(va_arg(ap, void *)));
+		return (out_pointer((unsigned long)va_arg(ap, void *)));
 	else if (n == 5)
 		return (out_string(va_arg(ap, char *)));
 	else if (n == 6)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cdahlhof <cdahlhof@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 20:28:03 by cdahlhof          #+#    #+#             */
-/*   Updated: 2021/08/16 14:12:06 by cdahlhof         ###   ########.fr       */
+/*   Updated: 2022/07/17 00:50:30 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,21 @@
 
 # include <unistd.h>
 # include <stdarg.h>
+# include <stdlib.h>
 
-//return the number of decimal digits of a given number
-size_t	_ndigit(size_t n);
 // write a given integer represented in a different clean base
-void	ft_putnbr_base(long nbr, char *base);
+int		ft_putnbr_base(unsigned long nbr, char *base);
 // return the length of an char array
 size_t	ft_strlen(const char *str);
 
 // write a given character
 int		out_char(char c);
 // write a given hexadecimal integer
-int		out_hexa(int nbr);
+int		out_hexa(long nbr);
 // write a given decimal integer
 int		out_integer(long i);
 // write a given adress
-int		out_pointer(void *i);
+int		out_pointer(unsigned long i);
 // write a given string
 int		out_string(char *s);
 // write a given unsigned integer
