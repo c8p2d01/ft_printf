@@ -11,9 +11,7 @@
 # **************************************************************************** #
 
 NAME = libftprintf.a
-OBJ_FILES = _putnbr_base.o _strlen.o\
-			out_zhexa_big.o out_char.o out_hexa.o out_integer.o out_pointer.o out_string.o out_unsigned_integer.o \
-			ft_printf.o out_spread.o
+OBJ_FILES = ft_printf.o
 BONUS = shenanigans.o
 #SRC_FILES = _log.c ft_putnbr_base.c _strlen.c _ndigit.c\
 			out_zhexa_big.c out_char.c out_hexa.c out_integer.c out_pointer.c out_string.c out_unsigned_integer.c \
@@ -29,9 +27,9 @@ bonus: $(BONUS)
 
 $(NAME): $(OBJ_FILES)
 	ar rcs $@ $^
-
+#-Wall -Werror -Wextra
 %.o: %.c
-	$(CC) -c -Wall -Werror -Wextra -o $@ $<
+	$(CC) -c  -o $@ $<
 
 clean:
 	rm -f $(OBJ_FILES)
