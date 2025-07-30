@@ -477,56 +477,56 @@ int handle_padding(unsigned long num)
 		pad = data->precision;
 	if (data->width > pad)
 		pad = data->width;
+	if (pad && data->precision == 0 && data->do_precision == true && data->do_width == false)
+		pad--;
 	if (data->is_negative || data->do_sign || data->sign_positive)
 		pad++;
 	if (data->pointer_prefix)
 		pad += 2;
-	if (pad && data->precision == 0 && data->do_precision == true && data->do_width == false)
-		pad--;
 	data->temp = malloc(pad + 1);
-	ft_memset(data->temp, ' ', pad + 1);
+	ft_memset(data->temp, '@', pad + 1);
 	data->temp[pad] = '\0';
 	if ((data->do_precision && data->precision) || !data->do_precision)
 		print_base_to_mem(data->temp + pad - 1, data->value_base, num);
 	i = data->value_length;
 	while (i < data->precision)
 	{
-		*ft_strrchr(data->temp, ' ') = '0';
+		*ft_strrchr(data->temp, '@') = '0';
 		i++;
 	}
 	while (i < data->width && data->padding_char == '0')
 	{
-		*ft_strrchr(data->temp, ' ') = '0';
+		*ft_strrchr(data->temp, '@') = '0';
 		i++;
 	}
 	if (data->is_negative && !data->pointer_prefix)
 	{
-		*ft_strrchr(data->temp, ' ') = '-';
+		*ft_strrchr(data->temp, '@') = '-';
 		i++;
 	}
 	else if (data->sign_positive && !data->pointer_prefix)
 	{
-		*ft_strrchr(data->temp, ' ') = '+';
+		*ft_strrchr(data->temp, '@') = '+';
 		i++;
 	}
 	else if (data->do_sign && !data->pointer_prefix)
 	{
-		*ft_strrchr(data->temp, ' ') = ' ';
+		*ft_strrchr(data->temp, '@') = ' ';
 		i++;
 	}
 	if (data->pointer_prefix && ft_strchr(data->insert_identifier, "pxX"))
 	{
 		if (data->insert_identifier == 'X')
-			*ft_strrchr(data->temp, ' ') = 'X';
+			*ft_strrchr(data->temp, '@') = 'X';
 		else
-			*ft_strrchr(data->temp, ' ') = 'x';
+			*ft_strrchr(data->temp, '@') = 'x';
 		i++;
-		*ft_strrchr(data->temp, ' ') = '0';
+		*ft_strrchr(data->temp, '@') = '0';
 		i++;
 	}
-	if (data->left_justify)
+	if (data->left_justify && i < pad)
 	{
-		ft_memcpy(data->temp, &data->temp[pad - i], pad);
+		ft_memcpy(data->temp, ft_strrchr(data->temp, '@') + 1, ft_strlen(ft_strrchr(data->temp, '@') + 1));
 		while (i < pad)
 		{
 			data->temp[i] = ' ';
@@ -536,6 +536,8 @@ int handle_padding(unsigned long num)
 	i = 0;
 	while (data->temp && data->temp[i])
 	{
+		if (data->temp[i] == '@')
+			data->temp[i] = ' ';
 		if (!ft_putchar(data->temp[i]))
 			return (0);
 		i++;
@@ -577,6 +579,8 @@ int	handle_u(va_list a)
 	data->value_base = ft_strdup("0123456789");
 	data->value_length = ft_log(num, 10);
 	data->width -= (data->do_sign || data->sign_positive);
+	if (num && data->value_length > data->precision)
+		data->precision = data->value_length;
 	if (data->do_precision)
 		data->padding_char = ' ';
 	return (handle_padding(num));
@@ -593,9 +597,13 @@ int	handle_x(va_list a)
 		data->pointer_prefix = false;
 	data->value_base = ft_strdup("0123456789abcdef");
 	data->value_length = ft_log(num, 16);
-	if (data->value_length > data->precision)
+	if (data->do_precision)
+		data->padding_char = ' ';
+	if (num && data->value_length > data->precision)
 		data->precision = data->value_length;
 	data->width -= (data->do_sign || data->sign_positive);
+	if (num && data->pointer_prefix)
+		data->width -= 2;
 	return (handle_padding(num));
 }
 int	handle_p(va_list a)
@@ -627,9 +635,13 @@ int	handle_X(va_list a)
 		data->pointer_prefix = false;
 	data->value_base = ft_strdup("0123456789ABCDEF");
 	data->value_length = ft_log(num, 16);
-	if (data->value_length > data->precision)
+	if (data->do_precision)
+		data->padding_char = ' ';
+	if (num && data->value_length > data->precision)
 		data->precision = data->value_length;
 	data->width -= (data->do_sign || data->sign_positive);
+	if (num && data->pointer_prefix)
+		data->width -= 2;
 	return (handle_padding(num));
 }
 
@@ -823,14 +835,14 @@ void compare(char *fmt, ...)
 	ori = fopen("/Users/cdahlhof/Documents/ft_printf/ori.txt", "a+");
 	va_start(va, fmt);
 	returns = vfprintf(ori, fmt, va);
-	fprintf(ori, "\nreturn value = %i\n", returns);
+	fprintf(ori, "\nreturn value = %i\n\n", returns);
 	va_end(va);
 	fclose(ori);
 
 	me = fopen("/Users/cdahlhof/Documents/ft_printf/me.txt", "a+");
 	va_start(va, fmt);
 	returns = ft_vfprintf(me, fmt, va);
-	fprintf(me, "\nreturn value = %i\n", returns);
+	fprintf(me, "\nreturn value = %i\n\n", returns);
 	va_end(va);
 	fclose(me);
 }
@@ -838,5 +850,13 @@ void compare(char *fmt, ...)
 // int main()
 // {
 //     compare(NULL);
-// 	compare("% d", 0);
+// 	compare("%05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x", 0, 5, -1, -10, 0x1234, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
+// 	compare("%05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x", 0, 5, -1, -10, 0x1234, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
+// 	compare("%#5x, %#5x, %#5x, %#5x, %#5x, %#5x, %#5x, %#5x, %#5x, %#5x", 0, 5, -1, -10, 0x1234, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
+// 	compare("%.0x, %.0x, %.0x, %.0x, %.0x, %.0x, %.0x, %.0x, %.0x, %.0x", 0, 5, -1, -10, 0x1234, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
+// 	compare("%.u, %.u, %.u, %.u, %.u, %.u, %.u, %.u, %.u, %.u", 0, 5, -1, -10, 100, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
+// 	compare("%10p, %10p, %10p, %10p, %10p, %10p", (void *)0, (void *)0xABCDE, (void *)ULONG_MAX, (void *)LONG_MIN, (void *)-1, (void *)-2352);
+// 	compare("%- 10d, %- 10d, %- 10d, %- 10d, %- 10d, %- 10d, %- 10d, %- 10d", 0, 5, -1, -10, 100, -1862, INT_MIN, INT_MAX);
+// 	compare("%-+.d, %-+.d, %-+.d, %-+.d, %-+.d, %-+.d, %-+.d, %-+.d", 0, 5, -1, -10, 100, -1862, INT_MIN, INT_MAX);
+// 	compare("%-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d", 0, 5, -1, -10, 100, -1862, INT_MIN, INT_MAX);
 // }
