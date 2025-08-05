@@ -1,43 +1,53 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: cdahlhof <cdahlhof@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/08/14 10:58:34 by cdahlhof          #+#    #+#              #
-#    Updated: 2024/11/24 01:10:13 by cdahlhof         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+# Output Name:
+NAME:=		libftprintf.a
 
-NAME = libftprintf.a
-OBJ_FILES = ft_printf.o
-BONUS = shenanigans.o
-#SRC_FILES = _log.c ft_putnbr_base.c _strlen.c _ndigit.c\
-			out_zhexa_big.c out_char.c out_hexa.c out_integer.c out_pointer.c out_string.c out_unsigned_integer.c \
-			ft_printf.c out_spread.o
-HEADER_FILES = ft_printf.h
-CC = gcc
+# Folders
+BUILD:=		./build
+SOURCE:=	./src
 
-all: $(NAME)
+# Other variables:
+COMPILER:=	cc
+COMPFLAGS:= -Werror -Werror -Wextra -g -c
 
+# Source Files:
+SRCFILES =	ft_printf.c \
+			flag_handling.c \
+			flag_reading.c \
+			handlers_1.c \
+			handlers_2.c \
+			mem_utils.c \
+			padding.c \
+			print_based_utils.c \
+			print_utils.c \
+			storage.c \
+			string_utils.c
 
-bonus: $(NAME)
-	ar rcs $(NAME) $^
+# Process Variables
+CC:=		$(COMPILER)
+CFLAGS:=	$(COMPFLAGS)
+SRCS:=		$(addprefix $(SOURCE)/,$(SRCFILES))
+OBJS:=		$(SRCS:$(SOURCE)/%.c=$(BUILD)/%.o)
+NAME:=		./$(NAME)
+OS:=		$(shell uname -s)
 
-$(NAME): $(OBJ_FILES)
-	ar rcs $@ $^
-#-Wall -Werror -Wextra
-%.o: %.c
-	$(CC) -c  -o $@ $<
+.PHONY: all clean fclean re
+
+all:
+	make -j $(nproc) $(NAME)
+
+$(OBJS): $(BUILD)%.o : $(SOURCE)%.c
+	@mkdir -p $(dir $@)
+	$(CC) -c $(CFLAGS) $< -o $@
+
+$(NAME): $(OBJS)
+	ar -rc $(NAME) $(OBJS) 
 
 clean:
-	rm -f $(OBJ_FILES)
-	rm -f $(BONUS)
+	$(RM) -r $(BUILD)
 
 fclean: clean
-	rm -f libftprintf.a
+	$(RM) -r $(NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+bonus: all
