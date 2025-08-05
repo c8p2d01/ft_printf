@@ -22,7 +22,7 @@ CC = gcc
 all: $(NAME)
 
 
-bonus: $(BONUS)
+bonus: $(NAME)
 	ar rcs $(NAME) $^
 
 $(NAME): $(OBJ_FILES)

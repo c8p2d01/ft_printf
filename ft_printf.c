@@ -1,43 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft?printf.c                                     :+:      :+:    :+:   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdahlhof <cdahlhof@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: cdahlhof <cdahlhof@student.42.fr>          #+#  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/15 16:19:21 by cdahlhof          #+#    #+#             */
-/*   Updated: 2022/07/17 00:58:07 by cdahlhof         ###   ########.fr       */
+/*   Created: 2025-08-05 17:21:50 by cdahlhof          #+#    #+#             */
+/*   Updated: 2025-08-05 17:21:50 by cdahlhof         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-t_data **query()
+t_data	**query(void)
 {
-    static t_data *data;
+	static t_data	*data;
 
-    return (&data);
+	return (&data);
 }
 
-int	reset_flags()
+int	reset_flags_extension(void)
 {
-    t_data  *data;
+	t_data	*data;
 
-    data = *query();
+	data = *query();
 	if (data)
 	{
-        data->do_sign = false;
-        data->do_width = false;
-        data->do_precision = false;
-        data->sign_positive = false;
-        data->is_negative = false;
-        data->left_justify = false;
-        data->padding_char = ' ';
-        data->pointer_prefix = false;
-		data->width = 0;
-		data->precision = 0;
-		data->insert_identifier = '\0';
-		data->value_length = 0;
 		if (data->value_base)
 			free(data->value_base);
 		data->value_base = NULL;
@@ -47,54 +35,75 @@ int	reset_flags()
 		data->string = NULL;
 		data->c = '\r';
 	}
-    else
-        return (1);
-    return (0);
+	else
+		return (1);
+	return (0);
 }
 
-int ft_init(const char *format)
+int	reset_flags(void)
 {
-    t_data  *data;
+	t_data	*data;
 
-    if (format)
-    {
-        *query() = malloc(sizeof(t_data));
+	data = *query();
+	if (data)
+	{
+		data->do_sign = false;
+		data->do_width = false;
+		data->do_precision = false;
+		data->sign_positive = false;
+		data->is_negative = false;
+		data->leftbound = false;
+		data->padd_char = ' ';
+		data->pointer_prefix = false;
+		data->width = 0;
+		data->precision = 0;
+		data->insert_identifier = '\0';
+		data->value_length = 0;
+	}
+	else
+		return (1);
+	reset_flags_extension();
+	return (0);
+}
+
+int	ft_init(const char *format)
+{
+	t_data	*data;
+
+	if (format)
+	{
+		*query() = malloc(sizeof(t_data));
 		ft_bzero(*query(), sizeof(t_data));
 		data = *query();
-        data->format = (char *)format;
-        data->insert = NULL;
-        data->i = 0;
-        data->skipped = 0;
-        data->added = 0;
+		data->format = (char *)format;
+		data->insert = NULL;
+		data->i = 0;
+		data->skipped = 0;
+		data->added = 0;
 		data->written = 0;
 		if (reset_flags())
 			return (1);
 		data->debug = false;
-    }
-    else
-        return (1);
-    return (0);
+	}
+	else
+		return (1);
+	return (0);
 }
 
-void	DEBUG()
+int	ft_close(int return_value)
 {
-	printf("DEBUG\n");
-}
+	t_data	*data;
 
-int ft_close(int return_value)
-{
-    t_data *data;
-
-    data = *query();
-    if (data)
-    {
+	data = *query();
+	if (data)
+	{
 		if (data->value_base)
 			free(data->value_base);
 		data->value_base = NULL;
-        free(data);
-        *query() = NULL;
-    }
-    return (return_value);
+		free(data);
+		*query() = NULL;
+	}
+	return (return_value);
 }
 
 size_t	ft_strlen(const char *str)
@@ -174,19 +183,19 @@ char	*ft_strdup(const char *s)
 	return (dest);
 }
 
-char *ft_strchr(char c, char *s)
+char	*ft_strchr(char c, char *s)
 {
-    if (!s)
-        return (NULL);
-    while (s && *s)
-    {
-        if (*s == c)
-            return (s);
-        s++;
-    }
-    if (s && c == '\0')
-        return (s);
-    return (NULL);
+	if (!s)
+		return (NULL);
+	while (s && *s)
+	{
+		if (*s == c)
+			return (s);
+		s++;
+	}
+	if (s && c == '\0')
+		return (s);
+	return (NULL);
 }
 
 char	*ft_strrchr(const char *s, int c)
@@ -249,11 +258,11 @@ int	ft_log(unsigned long num, int base)
 	return (digits);
 }
 
-int ft_putchar(char c)
+int	ft_putchar(char c)
 {
-    t_data	*data;
+	t_data	*data;
 
-    data = *query();
+	data = *query();
 	if (data->debug)
 	{
 		if (fwrite(&c, 1, 1, data->f) != 1)
@@ -268,7 +277,7 @@ int ft_putchar(char c)
 	return (1);
 }
 
-int repeat_char(char c, size_t n)
+int	repeat_char(char c, size_t n)
 {
 	int	i;
 
@@ -282,27 +291,34 @@ int repeat_char(char c, size_t n)
 	return (1);
 }
 
-int ft_putstr_case(char *s)
+int	ft_putstr_null(void)
 {
-	int	i;
-    t_data	*data;
+	t_data	*data;
 
-    data = *query();
+	data = *query();
+	if ((data->precision > 0 || !data->do_precision) && !ft_putchar('('))
+		return (0);
+	if ((data->precision > 1 || !data->do_precision) && !ft_putchar('n'))
+		return (0);
+	if ((data->precision > 2 || !data->do_precision) && !ft_putchar('u'))
+		return (0);
+	if ((data->precision > 3 || !data->do_precision) && !ft_putchar('l'))
+		return (0);
+	if ((data->precision > 4 || !data->do_precision) && !ft_putchar('l'))
+		return (0);
+	if ((data->precision > 5 || !data->do_precision) && !ft_putchar(')'))
+		return (0);
+	return (1);
+}
+
+int	ft_putstr_case(char *s)
+{
+	int		i;
+	t_data	*data;
+
+	data = *query();
 	if (!s)
-	{
-		if ((data->precision > 0 || !data->do_precision) && !ft_putchar('('))
-			return (0);
-		if ((data->precision > 1 || !data->do_precision) && !ft_putchar('n'))
-			return (0);
-		if ((data->precision > 2 || !data->do_precision) && !ft_putchar('u'))
-			return (0);
-		if ((data->precision > 3 || !data->do_precision) && !ft_putchar('l'))
-			return (0);
-		if ((data->precision > 4 || !data->do_precision) && !ft_putchar('l'))
-			return (0);
-		if ((data->precision > 5 || !data->do_precision) && !ft_putchar(')'))
-			return (0);
-	}
+		ft_putstr_null();
 	i = 0;
 	while (s && s[i] && (data->precision > i || !data->do_precision))
 	{
@@ -317,7 +333,7 @@ int	print_base(char *base, unsigned long nbr)
 {
 	int	i;
 	int	error;
-	int baselen;
+	int	baselen;
 
 	i = 0;
 	baselen = ft_strlen(base);
@@ -335,6 +351,7 @@ int	print_base(char *base, unsigned long nbr)
 		return (-1);
 	return (error + i);
 }
+
 /**
  * ALERT this function is highly unsstable and relies
  * on the memory to be allocated and iterates starting in the end
@@ -342,7 +359,7 @@ int	print_base(char *base, unsigned long nbr)
 void	print_base_to_mem(char *dest, char *base, unsigned long nbr)
 {
 	int	i;
-	int baselen;
+	int	baselen;
 
 	i = 0;
 	baselen = ft_strlen(base);
@@ -355,70 +372,50 @@ void	print_base_to_mem(char *dest, char *base, unsigned long nbr)
 	*dest = base[(nbr % ft_strlen(base))];
 }
 
-void    debug_logs(char *fmt, ...)
-{
-    (void)fmt;
-    #ifndef DEBUG
-        va_list lal;
-        va_start(lal, fmt);
-        printf("Debug\t");
-        vprintf(fmt, lal);
-        va_end(lal);
-        printf("\n");
-    #endif
-}
+// void	debug_data(va_list a)
+// {
+// 	t_data	*data;
+// 	FILE	*out;
 
-void	debug_data(va_list a)
-{
-    t_data	*data;
-	FILE	*out;
+// 	out = fopen("{PATH_PLACEHOLDER}}/ft_printf/debug.txt", "a+");
+// 	data = *query();
+// 	fprintf(out, "\nData Snapshot\n");
+// 	fprintf(out, "the given format is ");
+// 	fwrite(data->format + data->i - 1, 1, data->skipped + 1, out);
+// 	fprintf(out, "\ncurrently we are at position %i\n", data->i);
+// 	fprintf(out, "the flag is of length %i\n", data->skipped);
+// 	fprintf(out, "the type of insertion is %c\n", data->insert_identifier);
+// 	fprintf(out, "do we leave signspace? %s\n", data->do_sign ? "yes" : "no");
+// 	fprintf(out, "sign positives? %s\n", data->sign_positive ? "yes" : "no");
+// 	fprintf(out, "precision? %s\n", data->do_precision ? "yes" : "no");
+// 	fprintf(out, "width is set at %i\n", data->width);
+// 	fprintf(out, "precision is set at %i\n", data->precision);
+// 	data->do_precision ? fprintf(out, "\tprecisionlength  %i\n", \
+// 		data->precision) : (void)out;
+// 	fprintf(out, "do we give width %s\n", data->do_width ? "yes" : "no");
+// 	data->do_precision ? fprintf(out, "\tthe width is of length  %i\n", \
+// 		data->width) : (void)out;
+// 	fprintf(out, "%s", data->leftbound ? "forget padding\n" : "");
+// 	if (ft_strchr(data->insert_identifier, "idxoX"))
+// 		fprintf(out, "the number has a length of %i\n", data->value_length);
+// 	fclose(out);
+// }
 
-	out = fopen("/Users/cdahlhof/Documents/ft_printf/debug.txt", "a+");
-    data = *query();
-	fprintf(out, "\nData Snapshot\n");
-	fprintf(out, "the given format is ");
-	fwrite(data->format + data->i - 1, 1, data->skipped + 1, out);
-	fprintf(out, "\ncurrently we are at position %i\n", data->i);
-	fprintf(out, "the flag is of length %i\n", data->skipped);
-	fprintf(out, "the type of insertion is %c\n", data->insert_identifier);
-	fprintf(out, "in case of numbers, do we leave room for a sign? %s\n", data->do_sign ? "yes" : "no");
-	fprintf(out, "in case of numbers, do we sign positive numbers? %s\n", data->sign_positive ? "yes" : "no");
-	fprintf(out, "in case of numbers, do we give precision? %s\n", data->do_precision ? "yes" : "no");
-	fprintf(out, "width is set at %i\n", data->width);
-	fprintf(out, "precision is set at %i\n", data->precision);
-	data->do_precision ? fprintf(out, "\tthe precision is of length  %i\n",  data->precision) : (void)out;
-	fprintf(out, "in case of numbers, do we give width %s\n", data->do_width ? "yes" : "no");
-	data->do_precision ? fprintf(out, "\tthe width is of length  %i\n",  data->width) : (void)out;
-	fprintf(out, "%s", data->left_justify ? "forget padding we stick to the left\n" : "");
-	if (ft_strchr(data->insert_identifier, "idxoX"))
-		fprintf(out, "the number has a length of %i\n", data->value_length);
-	fclose(out);
-}
-
-int string_padding()
+int	string_padding_continuance(void)
 {
 	t_data	*data;
 	int		i;
 
 	data = *query();
-	if (!data->left_justify && data->do_precision && (data->width > data->precision))
-	{
-			if (!repeat_char(data->padding_char, data->width - data->precision))
-				return (0);
-	}
-	else if (!data->left_justify && !data->do_precision && (data->width > data->value_length))
-	{
-			if (!repeat_char(data->padding_char, data->width - data->value_length))
-				return (0);
-	}
 	i = 0;
-	while (data->string && data->string[i] && (data->precision > i || !data->do_precision))
+	while (data->string && data->string[i] && \
+			(data->precision > i || !data->do_precision))
 	{
 		if (!ft_putchar(data->string[i]))
 			return (0);
 		i++;
 	}
-	if (data->left_justify && (data->width > i))
+	if (data->leftbound && (data->width > i))
 	{
 		if (!repeat_char(' ', data->width - i))
 			return (0);
@@ -426,19 +423,58 @@ int string_padding()
 	return (1);
 }
 
-int char_padding(unsigned long num)
+int	string_padding(void)
 {
 	t_data	*data;
 
 	data = *query();
-	if (!data->left_justify && data->do_width && (data->width > data->precision))
+	if (!data->leftbound)
 	{
-		if (data->padding_char == '0' && data->is_negative)
+		if (data->do_precision && (data->width > data->precision))
+		{
+			if (!repeat_char(data->padd_char, data->width - data->precision))
+				return (0);
+		}
+		else if (!data->do_precision && (data->width > data->value_length))
+		{
+			if (!repeat_char(data->padd_char, data->width - data->value_length))
+				return (0);
+		}
+	}
+	string_padding_continuance();
+	return (1);
+}
+
+int	char_padding_extension(void)
+{
+	t_data	*data;
+
+	data = *query();
+	if (data->is_negative)
+		ft_putchar('-');
+	else if (data->insert_identifier == 'c' || data->insert_identifier == '%')
+		ft_putchar(data->c);
+	if (data->leftbound && data->do_width && (data->width > data->precision))
+	{
+		if (!repeat_char(' ', data->width - data->precision))
+			return (0);
+	}
+	return (1);
+}
+
+int	char_padding(void)
+{
+	t_data	*data;
+
+	data = *query();
+	if (!data->leftbound && data->do_width && (data->width > data->precision))
+	{
+		if (data->padd_char == '0' && data->is_negative)
 		{
 			ft_putchar('-');
 			data->is_negative = false;
 		}
-		if (!repeat_char(data->padding_char, data->width - data->precision))
+		if (!repeat_char(data->padd_char, data->width - data->precision))
 			return (0);
 	}
 	if (data->do_precision && data->precision > data->value_length)
@@ -451,23 +487,14 @@ int char_padding(unsigned long num)
 		if (!repeat_char('0', data->precision - data->value_length))
 			return (0);
 	}
-	if (data->is_negative)
-		ft_putchar('-');
-	else if (data->insert_identifier == 'c' || data->insert_identifier == '%')
-		ft_putchar(data->c);
-	if (data->left_justify && data->do_width && (data->width > data->precision))
-	{
-		if (!repeat_char(' ', data->width - data->precision))
-			return (0);
-	}
+	char_padding_extension();
 	return (1);
 }
 
-int handle_padding(unsigned long num)
+void	set_pad(unsigned long num)
 {
 	t_data	*data;
 	int		pad;
-	int		i;
 
 	data = *query();
 	pad = 0;
@@ -477,7 +504,8 @@ int handle_padding(unsigned long num)
 		pad = data->precision;
 	if (data->width > pad)
 		pad = data->width;
-	if (pad && data->precision == 0 && data->do_precision == true && data->do_width == false)
+	if (pad && data->precision == 0 && data->do_precision == true && \
+														data->do_width == false)
 		pad--;
 	if (data->is_negative || data->do_sign || data->sign_positive)
 		pad++;
@@ -488,51 +516,95 @@ int handle_padding(unsigned long num)
 	data->temp[pad] = '\0';
 	if ((data->do_precision && data->precision) || !data->do_precision)
 		print_base_to_mem(data->temp + pad - 1, data->value_base, num);
-	i = data->value_length;
-	while (i < data->precision)
+	data->pad = pad;
+}
+
+void	handle_precision(void)
+{
+	t_data	*data;
+
+	data = *query();
+	while (data->p_i < data->precision)
 	{
 		*ft_strrchr(data->temp, '@') = '0';
-		i++;
+		data->p_i++;
 	}
-	while (i < data->width && data->padding_char == '0')
+	while (data->p_i < data->width && data->padd_char == '0')
 	{
 		*ft_strrchr(data->temp, '@') = '0';
-		i++;
+		data->p_i++;
 	}
+}
+
+void	handle_sign(void)
+{
+	t_data	*data;
+
+	data = *query();
 	if (data->is_negative && !data->pointer_prefix)
 	{
 		*ft_strrchr(data->temp, '@') = '-';
-		i++;
+		data->p_i++;
 	}
 	else if (data->sign_positive && !data->pointer_prefix)
 	{
 		*ft_strrchr(data->temp, '@') = '+';
-		i++;
+		data->p_i++;
 	}
 	else if (data->do_sign && !data->pointer_prefix)
 	{
 		*ft_strrchr(data->temp, '@') = ' ';
-		i++;
+		data->p_i++;
 	}
+}
+
+void	handle_pointy(void)
+{
+	t_data	*data;
+
+	data = *query();
 	if (data->pointer_prefix && ft_strchr(data->insert_identifier, "pxX"))
 	{
 		if (data->insert_identifier == 'X')
 			*ft_strrchr(data->temp, '@') = 'X';
 		else
 			*ft_strrchr(data->temp, '@') = 'x';
-		i++;
+		data->p_i++;
 		*ft_strrchr(data->temp, '@') = '0';
-		i++;
+		data->p_i++;
 	}
-	if (data->left_justify && i < pad)
+}
+
+void	handle_leftsbound(void)
+{
+	t_data	*data;
+
+	data = *query();
+	if (data->leftbound && data->p_i < data->pad)
 	{
-		ft_memcpy(data->temp, ft_strrchr(data->temp, '@') + 1, ft_strlen(ft_strrchr(data->temp, '@') + 1));
-		while (i < pad)
+		ft_memcpy(data->temp, ft_strrchr(data->temp, '@') + 1, \
+									ft_strlen(ft_strrchr(data->temp, '@') + 1));
+		while (data->p_i < data->pad)
 		{
-			data->temp[i] = ' ';
-			i++;
+			data->temp[data->p_i] = ' ';
+			data->p_i++;
 		}
 	}
+}
+
+int	handle_padding(unsigned long num)
+{
+	t_data	*data;
+	int		i;
+
+	data = *query();
+	set_pad(num);
+	data->p_i = data->value_length;
+	handle_precision();
+	handle_sign();
+	i = data->p_i;
+	handle_pointy();
+	handle_leftsbound();
 	i = 0;
 	while (data->temp && data->temp[i])
 	{
@@ -547,11 +619,11 @@ int handle_padding(unsigned long num)
 
 int	handle_d_i(va_list a)
 {
-    t_data	*data;
+	t_data	*data;
 	long	val;
 	int		num;
 
-    data = *query();
+	data = *query();
 	val = va_arg(a, int);
 	num = val;
 	if (val < 0)
@@ -564,17 +636,17 @@ int	handle_d_i(va_list a)
 	if (num && data->value_length > data->precision)
 		data->precision = data->value_length;
 	if (data->do_precision)
-		data->padding_char = ' ';
+		data->padd_char = ' ';
 	data->width -= (data->do_sign || data->sign_positive || data->is_negative);
 	return (handle_padding((unsigned int)num));
 }
 
 int	handle_u(va_list a)
 {
-    t_data			*data;
+	t_data			*data;
 	unsigned int	num;
 
-    data = *query();
+	data = *query();
 	num = va_arg(a, int);
 	data->value_base = ft_strdup("0123456789");
 	data->value_length = ft_log(num, 10);
@@ -582,23 +654,23 @@ int	handle_u(va_list a)
 	if (num && data->value_length > data->precision)
 		data->precision = data->value_length;
 	if (data->do_precision)
-		data->padding_char = ' ';
+		data->padd_char = ' ';
 	return (handle_padding(num));
 }
 
 int	handle_x(va_list a)
 {
-    t_data			*data;
+	t_data			*data;
 	unsigned int	num;
 
-    data = *query();
+	data = *query();
 	num = va_arg(a, int);
 	if (!num)
 		data->pointer_prefix = false;
 	data->value_base = ft_strdup("0123456789abcdef");
 	data->value_length = ft_log(num, 16);
 	if (data->do_precision)
-		data->padding_char = ' ';
+		data->padd_char = ' ';
 	if (num && data->value_length > data->precision)
 		data->precision = data->value_length;
 	data->width -= (data->do_sign || data->sign_positive);
@@ -606,12 +678,13 @@ int	handle_x(va_list a)
 		data->width -= 2;
 	return (handle_padding(num));
 }
+
 int	handle_p(va_list a)
 {
-    t_data			*data;
+	t_data			*data;
 	unsigned long	num;
 
-    data = *query();
+	data = *query();
 	num = va_arg(a, unsigned long);
 	data->do_width = false;
 	data->width -= 2;
@@ -624,19 +697,19 @@ int	handle_p(va_list a)
 	return (handle_padding(num));
 }
 
-int	handle_X(va_list a)
+int	handle_big_x(va_list a)
 {
-    t_data			*data;
+	t_data			*data;
 	unsigned int	num;
 
-    data = *query();
+	data = *query();
 	num = va_arg(a, int);
 	if (!num)
 		data->pointer_prefix = false;
 	data->value_base = ft_strdup("0123456789ABCDEF");
 	data->value_length = ft_log(num, 16);
 	if (data->do_precision)
-		data->padding_char = ' ';
+		data->padd_char = ' ';
 	if (num && data->value_length > data->precision)
 		data->precision = data->value_length;
 	data->width -= (data->do_sign || data->sign_positive);
@@ -647,37 +720,37 @@ int	handle_X(va_list a)
 
 int	handle_c(va_list a)
 {
-    t_data	*data;
+	t_data	*data;
 	char	c;
 
-    data = *query();
+	data = *query();
 	c = va_arg(a, int);
 	data->value_length = 1;
 	data->do_precision = false;
 	data->c = c;
 	data->width--;
-	return (char_padding((unsigned int)c));
+	return (char_padding());
 }
 
-int	handle_percent()
+int	handle_percent(void)
 {
-    t_data	*data;
+	t_data	*data;
 	char	c;
 
-    data = *query();
+	data = *query();
 	data->value_length = 1;
 	data->do_precision = false;
 	data->c = '%';
 	data->width--;
-	return (char_padding((unsigned int)c));
+	return (char_padding());
 }
 
 int	handle_s(va_list a)
 {
-    t_data	*data;
+	t_data	*data;
 	char	*s;
 
-    data = *query();
+	data = *query();
 	s = va_arg(a, char *);
 	if (!s)
 	{
@@ -693,170 +766,185 @@ int	handle_s(va_list a)
 	return (string_padding());
 }
 
-int trigger_insert(va_list a)
+void	read_flags(void)
 {
-    t_data  *data;
-    int     len;
-	int		add;
+	t_data	*data;
 
-    data = *query();
-    len = 0;
-    while (data->format[data->i + len] && !ft_strchr(data->format[data->i + len], "discuxXp%"))
-    {
-		add = 1;
-        if (data->format[data->i + len] == ' ')
-            data->do_sign = true;
-        if (data->format[data->i + len] == '+')
-            data->sign_positive = true;
-		if (data->format[data->i + len] == '-')
-			data->left_justify = true;
-		if (data->format[data->i + len] == '#')
-			data->pointer_prefix = true;
-		if (data->format[data->i + len] == '0')
-			data->padding_char = '0';
-		if (data->format[data->i + len] == '.')
-		{
-			data->precision = ft_atoi(&data->format[data->i + len + 1]);
-			if (data->precision != 0)
-				add += ft_log(data->precision, 10);
-			if (data->format[data->i + len + 1] == '0')
-				add++;
-			data->do_precision = true;
-		}
-		if (ft_strchr(data->format[data->i + len], "123456789"))
-		{
-			data->do_width = true;
-			data->width = ft_atoi(&data->format[data->i + len]);
-			add = ft_log(data->width, 10);
-		}
-        len += add;
-    }
-	if (data->format[data->i + len])
-		data->insert_identifier = *ft_strchr(data->format[data->i + len], "discuxXp%");
-	// else unsupported flag
-	data->skipped = len + 1;
-	if (data->insert_identifier == 'i' || data->insert_identifier == 'd')
-		handle_d_i(a);
-	if (data->insert_identifier == 'u')
-		handle_u(a);
-	if (data->insert_identifier == 'x')
-		handle_x(a);
-	if (data->insert_identifier == 'p')
-		handle_p(a);
-	if (data->insert_identifier == 'X')
-		handle_X(a);
-	if (data->insert_identifier == 'c')
-		handle_c(a);
-	if (data->insert_identifier == '%')
-		handle_percent();
-	if (data->insert_identifier == 's')
-		handle_s(a);
-	// debug_data(a);
-	reset_flags();
-    return (0);
+	data = *query();
+	if (data->format[data->i + data->len] == ' ')
+		data->do_sign = true;
+	if (data->format[data->i + data->len] == '+')
+		data->sign_positive = true;
+	if (data->format[data->i + data->len] == '-')
+		data->leftbound = true;
+	if (data->format[data->i + data->len] == '#')
+		data->pointer_prefix = true;
+	if (data->format[data->i + data->len] == '0')
+		data->padd_char = '0';
 }
 
-int sprint(va_list a)
+void	read_numbers(void)
 {
-    t_data *data;
-    int i;
+	t_data	*data;
 
-    data = *query();
-    i = 0;
-    while (data->format[i])
-    {
-        data = *query();
-        if (data->format[i] != '%')
-        {
-            if (ft_putchar(data->format[i]) != 1)
-                return (1);
-        }
-        else
-        {
-            data->i = i + 1;
-            if (trigger_insert(a))
-                return (1);
+	data = *query();
+	if (data->format[data->i + data->len] == '.')
+	{
+		data->precision = ft_atoi(&data->format[data->i + data->len + 1]);
+		if (data->precision != 0)
+			data->add += ft_log(data->precision, 10);
+		if (data->format[data->i + data->len + 1] == '0')
+			data->add++;
+		data->do_precision = true;
+	}
+	if (ft_strchr(data->format[data->i + data->len], "123456789"))
+	{
+		data->do_width = true;
+		data->width = ft_atoi(&data->format[data->i + data->len]);
+		data->add = ft_log(data->width, 10);
+	}
+}
+
+int	delegate_handlers(va_list a)
+{
+	t_data	*data;
+
+	data = *query();
+	if (data->insert_identifier == 'i' || data->insert_identifier == 'd')
+		return (handle_d_i(a));
+	if (data->insert_identifier == 'u')
+		return (handle_u(a));
+	if (data->insert_identifier == 'x')
+		return (handle_x(a));
+	if (data->insert_identifier == 'p')
+		return (handle_p(a));
+	if (data->insert_identifier == 'X')
+		return (handle_big_x(a));
+	if (data->insert_identifier == 'c')
+		return (handle_c(a));
+	if (data->insert_identifier == '%')
+		return (handle_percent());
+	if (data->insert_identifier == 's')
+		return (handle_s(a));
+	return (0);
+}
+
+int	trigger_insert(va_list a)
+{
+	t_data	*data;
+
+	data = *query();
+	data->len = 0;
+	while (data->format[data->i + data->len] && \
+					!ft_strchr(data->format[data->i + data->len], "discuxXp%"))
+	{
+		data->add = 1;
+		read_flags();
+		read_numbers();
+		data->len += data->add;
+	}
+	if (data->format[data->i + data->len])
+		data->insert_identifier = \
+					*ft_strchr(data->format[data->i + data->len], "discuxXp%");
+	data->skipped = data->len + 1;
+	delegate_handlers(a);
+	reset_flags();
+	return (0);
+}
+
+int	sprint(va_list a)
+{
+	t_data	*data;
+	int		i;
+
+	data = *query();
+	i = 0;
+	while (data->format[i])
+	{
+		data = *query();
+		if (data->format[i] != '%')
+		{
+			if (ft_putchar(data->format[i]) != 1)
+				return (1);
+		}
+		else
+		{
+			data->i = i + 1;
+			if (trigger_insert(a))
+				return (1);
 			data = *query();
 			i += data->skipped;
-        }
-        i++;
-    }
-    return (i);
+		}
+		i++;
+	}
+	return (i);
 }
 
-int ft_printf(const char *format, ...)
+int	ft_printf(const char *format, ...)
 {
-    t_data *data;
-    va_list a;
-	
-    if (ft_init(format))
-        return (0);
-    va_start(a, format);
-    data = *query();
-    if (!sprint(a))
-        return (ft_close(data->written));
-    va_end(a);
+	t_data	*data;
+	va_list	a;
+
+	if (ft_init(format))
+		return (0);
+	va_start(a, format);
+	data = *query();
+	if (!sprint(a))
+		return (ft_close(data->written));
+	va_end(a);
 	ft_close(data->written);
-    return (data->written);
+	return (data->written);
 }
 
-int ft_vfprintf(FILE *f, const char *format, va_list a)
+int	ft_vfprintf(FILE *f, const char *format, va_list a)
 {
-    t_data *data;
-	
-    if (ft_init(format))
-        return (0);
-    data = *query();
+	t_data	*data;
+
+	if (ft_init(format))
+		return (0);
+	data = *query();
 	data->debug = true;
 	data->f = f;
-    if (!sprint(a))
-        return (ft_close(data->written));
-    return (data->written);
+	if (!sprint(a))
+		return (ft_close(data->written));
+	return (data->written);
 }
 
-void compare(char *fmt, ...)
-{
-	va_list	va;
-	FILE *ori;
-	int returns;
-	FILE *me;
-	
-	if (!fmt)
-	{
-
-		FILE *out = fopen("/Users/cdahlhof/Documents/ft_printf/debug.txt", "w+");
-		fclose(out);
-		ori = fopen("/Users/cdahlhof/Documents/ft_printf/ori.txt", "w+");
-		me = fopen("/Users/cdahlhof/Documents/ft_printf/me.txt", "w+");
-		fclose(ori);
-		fclose(me);
-		return ;
-	}
-	ori = fopen("/Users/cdahlhof/Documents/ft_printf/ori.txt", "a+");
-	va_start(va, fmt);
-	returns = vfprintf(ori, fmt, va);
-	fprintf(ori, "\nreturn value = %i\n\n", returns);
-	va_end(va);
-	fclose(ori);
-
-	me = fopen("/Users/cdahlhof/Documents/ft_printf/me.txt", "a+");
-	va_start(va, fmt);
-	returns = ft_vfprintf(me, fmt, va);
-	fprintf(me, "\nreturn value = %i\n\n", returns);
-	va_end(va);
-	fclose(me);
-}
-
-// int main()
+// void	compare(char *fmt, ...)
 // {
-//     compare(NULL);
-// 	compare("%05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x, %05.1x", 0, 5, -1, -10, 0x1234, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
-// 	compare("%05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x, %05.0x", 0, 5, -1, -10, 0x1234, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
-// 	compare("%#5x, %#5x, %#5x, %#5x, %#5x, %#5x, %#5x, %#5x, %#5x, %#5x", 0, 5, -1, -10, 0x1234, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
-// 	compare("%.0x, %.0x, %.0x, %.0x, %.0x, %.0x, %.0x, %.0x, %.0x, %.0x", 0, 5, -1, -10, 0x1234, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
-// 	compare("%.u, %.u, %.u, %.u, %.u, %.u, %.u, %.u, %.u, %.u", 0, 5, -1, -10, 100, -1862, 0xABCDE, INT_MIN, INT_MAX, UINT_MAX);
-// 	compare("%10p, %10p, %10p, %10p, %10p, %10p", (void *)0, (void *)0xABCDE, (void *)ULONG_MAX, (void *)LONG_MIN, (void *)-1, (void *)-2352);
-// 	compare("%- 10d, %- 10d, %- 10d, %- 10d, %- 10d, %- 10d, %- 10d, %- 10d", 0, 5, -1, -10, 100, -1862, INT_MIN, INT_MAX);
-// 	compare("%-+.d, %-+.d, %-+.d, %-+.d, %-+.d, %-+.d, %-+.d, %-+.d", 0, 5, -1, -10, 100, -1862, INT_MIN, INT_MAX);
-// 	compare("%-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d, %-+5.0d", 0, 5, -1, -10, 100, -1862, INT_MIN, INT_MAX);
+// 	va_list	va;
+// 	FILE *ori;
+// 	int returns;
+// 	FILE *me;
+
+// 	if (!fmt)
+// 	{
+
+// 		FILE *out = fopen("{PATH_PLACEHOLDER}}/ft_printf/debug.txt", "w+");
+// 		fclose(out);
+// 		ori = fopen("{PATH_PLACEHOLDER}}/ft_printf/ori.txt", "w+");
+// 		me = fopen("{PATH_PLACEHOLDER}}/ft_printf/me.txt", "w+");
+// 		fclose(ori);
+// 		fclose(me);
+// 		return ;
+// 	}
+// 	ori = fopen("{PATH_PLACEHOLDER}}/ft_printf/ori.txt", "a+");
+// 	va_start(va, fmt);
+// 	returns = vfprintf(ori, fmt, va);
+// 	fprintf(ori, "\nreturn value = %i\n\n", returns);
+// 	va_end(va);
+// 	fclose(ori);
+
+// 	me = fopen("{PATH_PLACEHOLDER}}/ft_printf/me.txt", "a+");
+// 	va_start(va, fmt);
+// 	returns = ft_vfprintf(me, fmt, va);
+// 	fprintf(me, "\nreturn value = %i\n\n", returns);
+// 	va_end(va);
+// 	fclose(me);
+// }
+
+// int main(void)
+// {
+//	 compare(NULL);
+// 	compare("Hello world\n");
 // }
